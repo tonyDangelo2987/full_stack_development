@@ -110,6 +110,35 @@ const tripsUpdateTrip = async (req, res) => {
   });
 };
 
+// DELETE: /trips/:tripCode - Deletes a Trip
+// Regardless of outcome, response must include HTML status code
+// and JSON message to the requesting client
+const tripsDeleteTrip = async (req, res) => {
+  await getUser(req, res, (req, res) => {
+    Trip.findOneAndDelete({
+      code: req.params.tripCode,
+    })
+      .then((trip) => {
+        if (!trip) {
+          return res.status(404).send({
+            message: "Trip not found with code" + req.params.tripCode,
+          });
+        }
+        res.send(trip);
+      })
+      .catch((err) => {
+        if (err.kind === "ObjectId") {
+          return res.status(404).send({
+            message: "Trip not found with code" + req.params.tripCode,
+          });
+        }
+        return res
+          .status(500) // server error
+          .json(err);
+      });
+  });
+};
+
 const getUser = async (req, res, callback) => {
   if (req.auth && req.auth.email) {
     try {
@@ -135,5 +164,6 @@ module.exports = {
   tripsList,
   tripsFindByCode,
   tripsAddTrip,
-  tripsUpdateTrip
+  tripsUpdateTrip,
+  tripsDeleteTrip,
 };

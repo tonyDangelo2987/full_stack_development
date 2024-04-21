@@ -14,8 +14,10 @@ import { AuthenticationService } from './authentication.service';
 export class TripDataService {
 
   constructor(private http: HttpClient, @Inject(BROWSER_STORAGE) private storage: Storage) { }
+  
   private url = 'http://localhost:3000/api/trips';
   private apiBaseUrl = 'http://localhost:3000/api/';
+
   getTrips(): Observable<Trip[]> {
     return this.http.get<Trip[]>(this.url);
   }
@@ -28,8 +30,8 @@ export class TripDataService {
     });
   }
 
-  getTrip(tripCopde: string): Observable<Trip[]> {
-    return this.http.get<Trip[]>(this.url + '/' + tripCopde);
+  getTrip(tripCode: string): Observable<Trip[]> {
+    return this.http.get<Trip[]>(this.url + '/' + tripCode);
   }
 
   updateTrip(formData: Trip): Observable<Trip> {
@@ -39,6 +41,15 @@ export class TripDataService {
       })
     });
   }
+
+  deleteTrip(tripCode: string): Observable<Trip> {
+    return this.http.delete<Trip>(this.url + '/' + tripCode, {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${this.storage.getItem('travlr-token')}`
+      })
+    });
+  }
+
   public login(user: User): Promise<AuthResponse> {
     return this.makeAuthApiCall('login', user);
   }

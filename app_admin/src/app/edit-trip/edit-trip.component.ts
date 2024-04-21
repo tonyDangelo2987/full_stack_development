@@ -12,6 +12,7 @@ import { Trip } from '../models/trip';
   templateUrl: './edit-trip.component.html',
   styleUrl: './edit-trip.component.css'
 })
+
 export class EditTripComponent implements OnInit {
   public editForm!: FormGroup;
   trip!: Trip;
@@ -48,31 +49,30 @@ export class EditTripComponent implements OnInit {
       description: ['', Validators.required]
     })
 
-    this.tripDataService.getTrip(tripCode)
-      .subscribe({
-        next: (value: any) => {
-          var date = new Date(value[0].start);
-          const format = 'yyyy-MM-dd';
-          const locale = 'en-US';
-          const formattedDate = formatDate(date, format, locale, "UTC");
-          
-          value[0].start = formattedDate;
-          
-          this.trip = value;
-          // Populate our record into the form
-          this.editForm.patchValue(value[0]);
-          if (!value) {
-            this.message = 'No Trip Retrieved!';
-          }
-          else {
-            this.message = 'Trip: ' + tripCode + ' retrieved';
-          }
-          console.log(this.message);
-        },
-        error: (error: any) => {
-          console.log('Error: ' + error);
+    this.tripDataService.getTrip(tripCode).subscribe({
+      next: (value: any) => {
+        var date = new Date(value[0].start);
+        const format = 'yyyy-MM-dd';
+        const locale = 'en-US';
+        const formattedDate = formatDate(date, format, locale, "UTC");
+
+        value[0].start = formattedDate;
+
+        this.trip = value;
+        // Populate our record into the form
+        this.editForm.patchValue(value[0]);
+        if (!value) {
+          this.message = 'No Trip Retrieved!';
         }
-      })
+        else {
+          this.message = 'Trip: ' + tripCode + ' retrieved';
+        }
+        console.log(this.message);
+      },
+      error: (error: any) => {
+        console.log('Error: ' + error);
+      }
+    })
   }
 
   public onSubmit() {
